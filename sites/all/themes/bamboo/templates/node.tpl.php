@@ -80,7 +80,7 @@
 ?>
 
 <article id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix" <?php print $attributes; ?>>
-
+<div class="text_container">
   <?php print $user_picture; ?>
 
   <header class="article-header">
@@ -128,8 +128,12 @@
 
   <?php
   // We hide the comments and links now so that we can render them later.
+ // echo '<pre>' . print_r(array_keys($content), true) . '</pre>'; die();
+  hide($content['field_image']);
   hide($content['comments']);
   hide($content['links']);
+  hide($content['field_gruppe']);
+  
   print render($content);
   ?>
 
@@ -143,7 +147,22 @@
     <?php if (!empty($content['links'])): ?>
       <nav class="links node-links clearfix"><?php print render($content['links']); ?></nav>
     <?php endif; ?>
-
-    <?php print render($content['comments']); ?>
+		<div class="icon_container">
+	    <?php 
+	    if(isset($content['field_gruppe']))
+	    {
+			foreach ($content['field_gruppe']['#items'] as $item)
+			{
+				print '<a href="/'. drupal_get_path_alias('taxonomy/term/'. $item['taxonomy_term']->tid , NULL) . '">';
+				print theme('image_style', array('path' => $item['taxonomy_term']->field_raume_icons[LANGUAGE_NONE][0]['uri'], 'style_name' => 'raume_icons', 'title' =>$item['taxonomy_term']->name));
+				print '</a>';
+			}
+	    }
+		?>
+		</div>
+  </div>
+  </div>
+  <div class="image_container">
+  	<?php print render($content['field_image']);?>
   </div>
 </article>

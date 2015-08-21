@@ -220,7 +220,8 @@
       <?php if ($action_links): ?>
         <ul class="action-links"><?php print render($action_links); ?></ul>
       <?php endif; ?>
-<?php print render($page['content']); ?>
+		
+		<?php print render($page['content']); ?>
       <?php print $feed_icons; ?>
     </section>
     <!-- /#main -->
@@ -233,9 +234,9 @@
 <?php endif; ?>
 
 </div>
-
+<!--  
 <footer id="colophon" class="container">
-
+-->
   <?php
   // Define and divide the footer page regions.
   if ($page['footer_first'] || $page['footer_second'] ||
@@ -278,5 +279,6 @@
       <?php endif; ?>
 
 <?php endif; ?>
-
+<!-- 
 </footer>
+-->

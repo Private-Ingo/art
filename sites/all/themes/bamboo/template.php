@@ -234,7 +234,9 @@ function bamboo_preprocess_page(&$vars, $hook) {
   // Get the entire main menu tree.
   $main_menu_tree = menu_tree_all_data('main-menu');
   // Add the rendered output to the $primary_nav variable.
+ 
   $vars['primary_nav'] = menu_tree_output($main_menu_tree);
+ 
   }
 
   else {
@@ -254,6 +256,39 @@ function bamboo_preprocess_page(&$vars, $hook) {
     $vars['is_node'] = true;
   }
 
+}
+function bamboo_menu_link(array $variables) 
+{
+	
+	$element = $variables['element'];
+	$menu_link = '';
+
+	if ($element['#below']) 
+	{
+	
+		$menu_link = drupal_render($element['#below']);
+	}
+	
+	$image = NULL;
+	
+	$element['#localized_options']['html'] = TRUE;
+	if(isset($element['#href']))
+	{
+		$parts = explode("/", $element['#href']);
+		if(isset($parts[2]))
+		{
+			$temObj = taxonomy_term_load($parts[2]);
+		
+			if(is_object($temObj) && isset($temObj->field_raume_icons[LANGUAGE_NONE][0]['uri']))
+			{
+				$image = theme('image_style', array('path' => $temObj->field_raume_icons[LANGUAGE_NONE][0]['uri'], 'style_name' => 'raume_icons'));
+			}
+		}
+	}
+	$linktext = '<span class="your_class">' . $element['#title'] . '</span>';
+	//echo '<pre>' . print_r($image, true) . '</pre>'; die();
+	$output = l($linktext, $element['#href'], $element['#localized_options']);
+	return '<li' . drupal_attributes($element['#attributes']) . '>'. (isset($image) ? $image : '') . $output . $menu_link . "</li>\n";
 }
 
 /**
@@ -322,6 +357,8 @@ function bamboo_preprocess_node(&$vars) {
 
 }
 
+
+
 /**
  * Implements hook_page_alter().
  */
@@ -367,4 +404,40 @@ function bamboo_page_alter($page) {
 
   }
 
+}
+
+function bamboo_image_style($variables) 
+{
+	if($variables['style_name'] == 'hohe_qaualitaet')
+	{
+		if(($variables['height'] - $variables['width']) > 1)
+		{
+			$variables['attributes'] = array
+			(
+				'class' => 'portrait',
+			);
+		}
+		else 
+		{
+			$variables['attributes'] = array
+			(
+					'class' => 'landscape',
+			);
+		}
+	}
+	
+	 // Determine the dimensions of the styled image.
+	$dimensions = array(
+    'width' => $variables ['width'],
+    'height' => $variables ['height'],
+  );
+
+  image_style_transform_dimensions($variables ['style_name'], $dimensions);
+
+  $variables ['width'] = $dimensions ['width'];
+  $variables ['height'] = $dimensions ['height'];
+
+  // Determine the URL for the styled image.
+  $variables ['path'] = image_style_url($variables ['style_name'], $variables ['path']);
+  return theme('image', $variables);
 }
